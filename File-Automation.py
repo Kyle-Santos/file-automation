@@ -50,7 +50,7 @@ def create_directories():
 
     print("Directories creation process completed.")
 
-# to be checked
+# to add function
 # def rename_files(folder_path, old_name, new_name):
 #     for filename in os.listdir(folder_path):
 #         if old_name in filename:
@@ -97,55 +97,77 @@ def search_files(keyword):
     for i, file in enumerate(matching_files, start=1):
         print(f"[{i}] {file}")
 
-# needs to be checked
-def copy_files(source_folder, destination_folder, file_extension):
-    for filename in os.listdir(source_folder):
-        if filename.lower().endswith(file_extension):
-            source_filepath = os.path.join(source_folder, filename)
-            destination_filepath = os.path.join(destination_folder, filename)
-            shutil.copy(source_filepath, destination_filepath)
-            print(f'Copied: {filename} to {destination_folder}')
+def move_files_back():
+    directories_to_create = [image_path, videos_path, pdf_path, zip_path, codes_path, others_path]
 
-# old_name = 'old'
-# new_name = 'new'
-# destination_folder = '/path/to/destination'
-# file_extension_to_delete = '.txt'
+    for subdir in os.listdir(folder_path):
+        subdirectory_path = os.path.join(folder_path, subdir)
 
-# create_directories()
-# rename_files(folder_path, old_name, new_name)
-# move_files(folder_path, destination_folder)
-# delete_files(folder_path, file_extension_to_delete)
+        # Skip system files or directories starting with a dot
+        if subdirectory_path not in directories_to_create:
+            continue
 
-print("File Automation Menu:")
-print("[1] Sort files into their respective file types")
-print("[2] Move a specific file type into a folder")
-print("[3] Delete files based on file name")
-print("[4] Search files by criteria")
+        for filename in os.listdir(subdirectory_path):
+            source_filepath = os.path.join(subdirectory_path, filename)
 
-user_input = input('\nEnter input: ')
+            # Skip system files or directories starting with a dot
+            if filename.startswith('.') or os.path.isdir(source_filepath):
+                continue
 
-if user_input == '1':
-    folder_path = choose_directory()
+            destination_filepath = os.path.join(folder_path, filename)
+            shutil.move(source_filepath, destination_filepath)
+            print(f'Moved: {filename} to {destination_filepath}')
 
-    # new directories
-    image_path = os.path.join(folder_path, 'Images')
-    videos_path = os.path.join(folder_path, 'Videos')
-    pdf_path = os.path.join(folder_path, 'PDFs')
-    zip_path = os.path.join(folder_path, 'ZIP')
-    codes_path = os.path.join(folder_path, 'Codes')
-    others_path = os.path.join(folder_path, 'Others')
+# to add function 
+# def copy_files(source_folder, destination_folder, file_extension):
+#     for filename in os.listdir(source_folder):
+#         if filename.lower().endswith(file_extension):
+#             source_filepath = os.path.join(source_folder, filename)
+#             destination_filepath = os.path.join(destination_folder, filename)
+#             shutil.copy(source_filepath, destination_filepath)
+#             print(f'Copied: {filename} to {destination_folder}')
 
-    create_directories()
-    move_files()
-elif user_input == '2':
-    pass
-elif user_input == '3':
-    folder_path = choose_directory()
-    user_input = input('Delete a file or files by criteria (not case-sensitive): ')
-    delete_files(user_input.lower())
-elif user_input == '4':
-    folder_path = choose_directory()
-    user_input = input('Enter a keywork of the filename: ')
-    search_files(user_input)
-else:
-    print('Invalid input.')
+def main():
+    print("File Automation Menu:")
+    print("[1] Sort files into their respective file types")
+    print("[2] Move a specific file type into a folder")
+    print("[3] Delete files based on file name")
+    print("[4] Search files by criteria")
+    print("[5] Move all the files back to the parent directory")
+
+    global folder_path
+    user_input = input('\nEnter input: ')
+
+    if user_input == '1' or user_input == '5':
+        folder_path = choose_directory()
+
+        # new directories
+        global image_path, videos_path, pdf_path, zip_path, codes_path, others_path
+
+        image_path = os.path.join(folder_path, 'Images')
+        videos_path = os.path.join(folder_path, 'Videos')
+        pdf_path = os.path.join(folder_path, 'PDFs')
+        zip_path = os.path.join(folder_path, 'ZIP')
+        codes_path = os.path.join(folder_path, 'Codes')
+        others_path = os.path.join(folder_path, 'Others')
+
+        if user_input == '1':
+            create_directories()
+            move_files()
+        else:
+            move_files_back()
+    elif user_input == '2':
+        pass
+    elif user_input == '3':
+        folder_path = choose_directory()
+        user_input = input('Delete a file or files by criteria (not case-sensitive): ')
+        delete_files(user_input.lower())
+    elif user_input == '4':
+        folder_path = choose_directory()
+        user_input = input('Enter a keywork of the filename: ')
+        search_files(user_input)
+    else:
+        print('Invalid input.')
+
+if __name__ == '__main__':
+    main()
